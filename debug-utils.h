@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(NDEBUG)
-#define DPRINTF(...) /*nothing*/
+#define DPRINTF(...) /* nop */
 #else
-#define DPRINTF(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__)
+#define DPRINTF(...) fprintf(stderr, __VA_ARGS__)
 #endif
