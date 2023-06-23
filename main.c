@@ -27,36 +27,15 @@ int main(int, char **);
 
 /**
  * @name perrorWithFile
- * @brief perror("%s: %s", myName, FILE)
+ * @brief perror("%s: %s") where "%s: %s", myName, FILE
+ * @global errno
  * @description
  * Error message shall be PROGRAM: FILE: MESSAGE.
  * You can edit FILE.
  */
 void
 perrorWithFile(const char *s){
-	const size_t myName_length = strlen(myName);
-	const size_t s_length = strlen(s);
-
-	const size_t required_msg_len = myName_length + 2 + s_length + 1;
-
-#if defined(__STDC_NO_VLA__)
-	char *msg = (char *)calloc(required_msg_len, sizeof(char));
-	if ( ! msg ) {
-		perror(myName);
-		return;
-	}
-#else
-	char msg[required_msg_len];
-#endif
-
-	strcpy(msg, myName);
-	strcat(msg, ": ");
-	strcat(msg, s);
-	perror(msg);
-
-#if defined(__STDC_NO_VLA__)
-	free(msg);
-#endif
+	printf("%s: %s: %s\n", myName, s, strerror(errno));
 }
 
 
@@ -161,7 +140,7 @@ main(int argc, char **argv){
 			goto exit_content;
 		}
 
-		src.content_length = fread(src.content, sizeof(char), sizeof(src.content)/sizeof(src.content[0]), fp);
+		src.content_length = fread(src.content, sizeof(src.content) / sizeof(src.content[0]), sizeof(char), fp);
 
 		int is_eof = feof(fp);
 		int maybe_error = ferror(fp);
@@ -186,7 +165,8 @@ main(int argc, char **argv){
 exit_content:
 
 	// now I have prepared Pxem source, let's pass to interpreter.
-	pxem_init();
+	pxem_init(&src);
+	pxem_run();
 
 	goto the_trap_0;
 
